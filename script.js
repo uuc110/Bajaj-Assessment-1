@@ -38,40 +38,70 @@ function updateFilteredResponse() {
 
     const filteredContent = `
         <div class="response-item">
-            <span class="response-label">Numbers:</span> <span>${apiResponse.numbers.join(', ')}</span>
+            <span class="response-label">Numbers:</span> 
+            <span>${apiResponse.numbers.join(', ')}</span>
         </div>
         <div class="response-item">
-            <span class="response-label">Alphabets:</span> <span>${apiResponse.alphabets.join(', ')}</span>
+            <span class="response-label">Alphabets:</span> 
+            <span>${apiResponse.alphabets.join(', ')}</span>
         </div>
         <div class="response-item">
-            <span class="response-label">Highest Lowercase Alphabet:</span> <span>${apiResponse.highest_lowercase_alphabet.join(', ')}</span>
+            <span class="response-label">Highest Lowercase Alphabet:</span> 
+            <span>${apiResponse.highest_lowercase_alphabet.join(', ')}</span>
         </div>
+        <div class="response-item">
+            <span class="response-label">File Valid:</span> 
+            <span>${apiResponse.file_valid}</span>
+        </div>
+        ${apiResponse.file_valid ? `
+            <div class="response-item">
+                <span class="response-label">File MIME Type:</span> 
+                <span>${apiResponse.file_mime_type}</span>
+            </div>
+            <div class="response-item">
+                <span class="response-label">File Size (KB):</span> 
+                <span>${apiResponse.file_size_kb}</span>
+            </div>
+        ` : ''}
     `;
 
     responseDiv.innerHTML = filteredContent;
     responseTitle.textContent = 'Response';
 }
 
+
 async function handleSubmit() {
-    const jsonInput = document.getElementById('jsonInput').value;
+    const jsonInput = document.getElementById('jsonInput').value.trim();
     const errorDiv = document.getElementById('error');
+
+    if (!jsonInput) {
+        errorDiv.textContent = 'Input cannot be empty. Please enter valid JSON.';
+        return;
+    }
 
     try {
         document.getElementById('responseTitle').textContent = 'Loading...';
 
+        // Parse the input JSON
         const parsedInput = JSON.parse(jsonInput);
+        
+        // Validate the required structure
+        if (!parsedInput.data || !Array.isArray(parsedInput.data)) {
+            throw new Error('Input must contain a "data" array');
+        }
+
         console.log('Parsed Input:', parsedInput);
         errorDiv.textContent = '';
 
         const response = await fetch('https://bajaj-assessment-1-phum.onrender.com/bfhl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(parsedInput)
+            body: JSON.stringify(parsedInput) // Send the entire parsed input
         });
-        
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
         apiResponse = await response.json();
@@ -84,12 +114,14 @@ async function handleSubmit() {
         if (error instanceof SyntaxError) {
             errorDiv.textContent = 'Invalid JSON format. Please enter valid JSON.';
         } else {
-            errorDiv.textContent = 'Failed to connect to the server. Please try again later.';
+            errorDiv.textContent = error.message;
         }
         document.getElementById('filteredResponse').innerHTML = '';
         document.getElementById('responseTitle').textContent = '';
     }
 }
+
+
 
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.filter-container')) {

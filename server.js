@@ -11,6 +11,14 @@ app.use(cors({
 
 app.use(express.json());
 
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        console.error('Bad JSON');
+        return res.status(400).json({ is_success: false, error: 'Invalid JSON format.' });
+    }
+    next();
+});
+
 const USER_ID = "Sourabh Kushwah";
 const EMAIL = "sourabhkushwah211111@acropolis.in";
 const ROLL_NUMBER = "0827IT21111";
@@ -30,10 +38,10 @@ app.get('/bfhl', (req, res) => {
 
 app.post('/bfhl', (req, res) => {
     try {
-        let { data } = req.body;
+        const { data, file_b64 } = req.body;
 
         if (!Array.isArray(data)) {
-            throw new Error('Expected an array');
+            throw new Error('Data must be an array');
         }
 
         const numbers = data.filter(item => !isNaN(item));
@@ -45,6 +53,27 @@ app.post('/bfhl', (req, res) => {
 
         const isPrimeFound = numbers.some(num => isPrime(parseInt(num)));
 
+        // Handle file_b64
+        let fileValid = false;
+        let fileMimeType = undefined;
+        let fileSizeKb = undefined;
+
+        if (file_b64) {
+            try {
+                // Basic validation for base64 string
+                if (file_b64.match(/^data:([A-Za-z-+\/]+);base64,/)) {
+                    fileValid = true;
+                    // Extract MIME type
+                    fileMimeType = file_b64.match(/^data:([A-Za-z-+\/]+);base64,/)[1];
+                    // Calculate file size
+                    const base64Length = file_b64.replace(/^data:([A-Za-z-+\/]+);base64,/, '').length;
+                    fileSizeKb = Math.round((base64Length * 3/4) / 1024); // Convert to KB
+                }
+            } catch (error) {
+                console.error('Error processing file:', error);
+            }
+        }
+
         const response = {
             is_success: true,
             user_id: USER_ID,
@@ -54,18 +83,22 @@ app.post('/bfhl', (req, res) => {
             alphabets,
             highest_lowercase_alphabet: highestLowercaseAlphabet,
             is_prime_found: isPrimeFound,
-            file_valid: false,
-            file_mime_type: undefined,
-            file_size_kb: undefined
+            file_valid: fileValid,
+            file_mime_type: fileMimeType,
+            file_size_kb: fileSizeKb
         };
 
         res.json(response);
 
     } catch (error) {
         console.error(error);
-        res.status(400).json({ is_success: false, error: error.message });
+        res.status(400).json({ 
+            is_success: false, 
+            error: error.message 
+        });
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
