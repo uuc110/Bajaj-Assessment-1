@@ -5,6 +5,12 @@ function toggleDropdown() {
     document.getElementById('dropdown').classList.toggle('show');
 }
 
+   const response = await fetch('https://your-backend-url.com/bfhl', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify(parsedInput)
+   });
+
 function toggleFilter(filter) {
     if (selectedFilters.has(filter)) {
         selectedFilters.delete(filter);
