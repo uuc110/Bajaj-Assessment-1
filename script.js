@@ -62,7 +62,8 @@ function updateFilteredResponse() {
                 <span class="response-label">File Size (KB):</span> 
                 <span>${apiResponse.file_size_kb}</span>
             </div>
-        ` : ''}
+        ` : ''} 
+        /* sample test change */
     `;
 
     responseDiv.innerHTML = filteredContent;
