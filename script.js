@@ -5,12 +5,6 @@ function toggleDropdown() {
     document.getElementById('dropdown').classList.toggle('show');
 }
 
-const response = await fetch('https://bajaj-assessment-1.vercel.app/bfhl', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(parsedInput)
-});
-
 function toggleFilter(filter) {
     if (selectedFilters.has(filter)) {
         selectedFilters.delete(filter);
@@ -41,28 +35,20 @@ function updateFilteredResponse() {
     const responseDiv = document.getElementById('filteredResponse');
     const responseTitle = document.getElementById('responseTitle');
 
-    const filteredContent = Array.from(selectedFilters)
-        .filter(key => apiResponse[key])
-        .map(key => `
-            <div class="response-item">
-                <span class="response-label">${key}:</span>
-                <span>${formatResponse(key, apiResponse[key])}</span>
-            </div>
-        `).join('');
-
-    responseDiv.innerHTML = filteredContent || `
+    const filteredContent = `
         <div class="response-item">
-            <span class="response-label">Numbers:</span> <span>${formatResponse('numbers', apiResponse.numbers)}</span>
+            <span class="response-label">Numbers:</span> <span>${apiResponse.numbers.join(', ')}</span>
         </div>
         <div class="response-item">
-            <span class="response-label">Alphabets:</span> <span>${formatResponse('alphabets', apiResponse.alphabets)}</span>
+            <span class="response-label">Alphabets:</span> <span>${apiResponse.alphabets.join(', ')}</span>
         </div>
         <div class="response-item">
-            <span class="response-label">Highest Lowercase Alphabet:</span> <span>${formatResponse('highest_lowercase_alphabet', apiResponse.highest_lowercase_alphabet)}</span>
+            <span class="response-label">Highest Lowercase Alphabet:</span> <span>${apiResponse.highest_lowercase_alphabet.join(', ')}</span>
         </div>
     `;
 
-    responseTitle.textContent = selectedFilters.size ? 'Filtered Response' : 'Response';
+    responseDiv.innerHTML = filteredContent;
+    responseTitle.textContent = 'Response';
 }
 
 async function handleSubmit() {
@@ -74,29 +60,47 @@ async function handleSubmit() {
         console.log('Parsed Input:', parsedInput);
         errorDiv.textContent = '';
 
-        const response = await fetch('https://bajaj-assessment-1.vercel.app/bfhl', {
+        const response = await fetch('http://localhost:3000/bfhl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(parsedInput)
+            body: JSON.stringify({ data: parsedInput })
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log('API Response:', data);
-        apiResponse = data;
+        apiResponse = await response.json();
+        console.log('API Response:', apiResponse);
         updateFilteredResponse();
 
     } catch (error) {
-        console.error('Error:', error);
-        errorDiv.textContent = 'Invalid JSON format';
+        console.error('Error:', error.message);
+        errorDiv.textContent = 'Invalid JSON format or failed to connect to server';
         document.getElementById('filteredResponse').innerHTML = '';
     }
 }
 
-// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.filter-container')) {
+        document.getElementById('dropdown').classList.remove('show');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+});
+
+// document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+
+document.getElementById('filterBtn').addEventListener('click', toggleDropdown);
+
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', function() {
+        toggleFilter(this.getAttribute('data-filter'));
+    });
+});
+
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.filter-container')) {
         document.getElementById('dropdown').classList.remove('show');

@@ -16,33 +16,32 @@
     </button>
 
     <div class="input-container">
-        <div class="inputBox">
-            <div class="textAPI">API Input</div>
-            <input id="jsonInput" placeholder='{"data":["M","1","334","4","B"]}' type="text" required="">
-        </div>
-        <button class="submit-btn" onclick="handleSubmit()">Submit</button>
-        <div id="error" class="error"></div>
+    <div class="inputBox">
+        <div class="textAPI">API Input</div>
+        <input id="jsonInput" placeholder='{"data":["M","1","334","4","B"]}' type="text" required="">
     </div>
+    <button class="submit-btn" id="submitBtn">Submit</button>
+    <div id="error" class="error"></div>
+</div>
 
     <div class="filter-container">
-        <button class="filter-input" onclick="toggleDropdown()">
+        <button class="filter-input" id="filterBtn">
             <span>Multi Filter</span>
             <div id="selectedTags"></div>
         </button>
         <div id="dropdown" class="dropdown">
-            <div class="dropdown-item" onclick="toggleFilter('numbers')">Numbers</div>
-            <div class="dropdown-item" onclick="toggleFilter('alphabets')">Alphabets</div>
-            <div class="dropdown-item" onclick="toggleFilter('highest_lowercase_alphabet')">Highest Lowercase Alphabet</div>
+            <div class="dropdown-item" data-filter="numbers">Numbers</div>
+            <div class="dropdown-item" data-filter="alphabets">Alphabets</div>
+            <div class="dropdown-item" data-filter="highest_lowercase_alphabet">Highest Lowercase Alphabet</div>
         </div>
     </div>
 
     <div id="responseTitle" class="response-title">Response</div>
     <div id="filteredResponse" class="filtered-response"></div>
     <div class="footer">
-        <!-- blue line here after response end -->
         <div class="blue-line"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
