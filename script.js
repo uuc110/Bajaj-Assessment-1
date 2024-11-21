@@ -57,6 +57,8 @@ async function handleSubmit() {
     const errorDiv = document.getElementById('error');
 
     try {
+        document.getElementById('responseTitle').textContent = 'Loading...';
+
         const parsedInput = JSON.parse(jsonInput);
         console.log('Parsed Input:', parsedInput);
         errorDiv.textContent = '';
@@ -75,11 +77,17 @@ async function handleSubmit() {
         apiResponse = await response.json();
         console.log('API Response:', apiResponse);
         updateFilteredResponse();
+        document.getElementById('responseTitle').textContent = 'Response';
 
     } catch (error) {
         console.error('Error:', error.message);
-        errorDiv.textContent = 'Invalid JSON format or failed to connect to server';
+        if (error instanceof SyntaxError) {
+            errorDiv.textContent = 'Invalid JSON format. Please enter valid JSON.';
+        } else {
+            errorDiv.textContent = 'Failed to connect to the server. Please try again later.';
+        }
         document.getElementById('filteredResponse').innerHTML = '';
+        document.getElementById('responseTitle').textContent = '';
     }
 }
 
