@@ -65,18 +65,26 @@ async function handleSubmit() {
 
     try {
         const parsedInput = JSON.parse(jsonInput);
+        console.log('Parsed Input:', parsedInput);
         errorDiv.textContent = '';
 
-        const response = await fetch('https://bajaj-assessment-1.vercel.app/bfhl', {
+        const response = await fetch('https://your-backend-url.com/bfhl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(parsedInput)
         });
 
-        apiResponse = await response.json();
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('API Response:', data);
+        apiResponse = data;
         updateFilteredResponse();
 
     } catch (error) {
+        console.error('Error:', error);
         errorDiv.textContent = 'Invalid JSON format';
         document.getElementById('filteredResponse').innerHTML = '';
     }
