@@ -5,11 +5,11 @@ function toggleDropdown() {
     document.getElementById('dropdown').classList.toggle('show');
 }
 
-   const response = await fetch('https://your-backend-url.com/bfhl', {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify(parsedInput)
-   });
+const response = await fetch('https://bajaj-assessment-1.vercel.app/bfhl', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(parsedInput)
+});
 
 function toggleFilter(filter) {
     if (selectedFilters.has(filter)) {
