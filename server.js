@@ -2,12 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://bajaj-assessment-1.vercel.app',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 
 const USER_ID = "Sourabh Kushwah";
 const EMAIL = "sourabhkushwah211111@acropolis.in";
-const ROLL_NUMBER = "0827IT211113";
+const ROLL_NUMBER = "0827IT21111";
 
 function isPrime(num) {
     num = parseInt(num);
@@ -56,3 +60,9 @@ app.post('/bfhl', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.get('*', (req, res) => {
+    res.status(404).json({ error: 'Not Found' });
+});
+
+module.exports = app;
