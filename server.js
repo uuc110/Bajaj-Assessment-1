@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-    origin: '*',
+    origin: 'https://bajaj-assessment-1.vercel.app/',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
