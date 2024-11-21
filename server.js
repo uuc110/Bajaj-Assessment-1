@@ -1,3 +1,4 @@
+//server.js
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -30,8 +31,6 @@ app.get('/bfhl', (req, res) => {
 app.post('/bfhl', (req, res) => {
     try {
         let { data } = req.body;
-        // console.log(data);
-        data = data.data;
 
         if (!Array.isArray(data)) {
             throw new Error('Expected an array');

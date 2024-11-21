@@ -1,3 +1,4 @@
+// script.js
 let apiResponse = null;
 let selectedFilters = new Set();
 
@@ -63,8 +64,9 @@ async function handleSubmit() {
         const response = await fetch('https://bajaj-assessment-1-phum.onrender.com/bfhl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: parsedInput })
+            body: JSON.stringify(parsedInput)
         });
+        
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
