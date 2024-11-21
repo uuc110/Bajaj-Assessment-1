@@ -1,4 +1,3 @@
-// script.js
 let apiResponse = null;
 let selectedFilters = new Set();
 
@@ -36,40 +35,47 @@ function updateFilteredResponse() {
     const responseDiv = document.getElementById('filteredResponse');
     const responseTitle = document.getElementById('responseTitle');
 
-    const filteredContent = `
-        <div class="response-item">
-            <span class="response-label">Numbers:</span> 
-            <span>${apiResponse.numbers.join(', ')}</span>
-        </div>
-        <div class="response-item">
-            <span class="response-label">Alphabets:</span> 
-            <span>${apiResponse.alphabets.join(', ')}</span>
-        </div>
-        <div class="response-item">
-            <span class="response-label">Highest Lowercase Alphabet:</span> 
-            <span>${apiResponse.highest_lowercase_alphabet.join(', ')}</span>
-        </div>
-        <div class="response-item">
-            <span class="response-label">File Valid:</span> 
-            <span>${apiResponse.file_valid}</span>
-        </div>
-        ${apiResponse.file_valid ? `
-            <div class="response-item">
-                <span class="response-label">File MIME Type:</span> 
-                <span>${apiResponse.file_mime_type}</span>
-            </div>
-            <div class="response-item">
-                <span class="response-label">File Size (KB):</span> 
-                <span>${apiResponse.file_size_kb}</span>
-            </div>
-        ` : ''} 
-        /* sample test change */
-    `;
+    let filteredContent = '';
+
+    if (selectedFilters.size === 0) {
+        filteredContent = '<div class="response-item">No filters selected. Please select from the filter above.</div>';
+    } else {
+        selectedFilters.forEach(filter => {
+            switch (filter) {
+                case 'numbers':
+                    filteredContent += `
+                        <div class="response-item">
+                            <span class="response-label">Numbers:</span> 
+                            <span>${apiResponse.numbers.length > 0 ? apiResponse.numbers.join(', ') : 'None'}</span>
+                        </div>
+                    `;
+                    break;
+                case 'alphabets':
+                    filteredContent += `
+                        <div class="response-item">
+                            <span class="response-label">Alphabets:</span> 
+                            <span>${apiResponse.alphabets.length > 0 ? apiResponse.alphabets.join(', ') : 'None'}</span>
+                        </div>
+                    `;
+                    break;
+                case 'highest_lowercase_alphabet':
+                    filteredContent += `
+                        <div class="response-item">
+                            <span class="response-label">Highest Lowercase Alphabet:</span> 
+                            <span>${apiResponse.highest_lowercase_alphabet.length > 0 ? apiResponse.highest_lowercase_alphabet.join(', ') : 'None'}</span>
+                        </div>
+                    `;
+                    break;
+                // Add other filters if necessary
+                default:
+                    break;
+            }
+        });
+    }
 
     responseDiv.innerHTML = filteredContent;
     responseTitle.textContent = 'Response';
 }
-
 
 async function handleSubmit() {
     const jsonInput = document.getElementById('jsonInput').value.trim();
@@ -122,8 +128,6 @@ async function handleSubmit() {
     }
 }
 
-
-
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.filter-container')) {
         document.getElementById('dropdown').classList.remove('show');
@@ -132,20 +136,10 @@ document.addEventListener('click', function(event) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('submitBtn').addEventListener('click', handleSubmit);
-});
-
-// document.getElementById('submitBtn').addEventListener('click', handleSubmit);
-
-document.getElementById('filterBtn').addEventListener('click', toggleDropdown);
-
-document.querySelectorAll('.dropdown-item').forEach(item => {
-    item.addEventListener('click', function() {
-        toggleFilter(this.getAttribute('data-filter'));
+    document.getElementById('filterBtn').addEventListener('click', toggleDropdown);
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            toggleFilter(this.getAttribute('data-filter'));
+        });
     });
-});
-
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.filter-container')) {
-        document.getElementById('dropdown').classList.remove('show');
-    }
 });
